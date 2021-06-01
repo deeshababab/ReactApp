@@ -5,7 +5,7 @@ import GridsScreen from '../grids/GridsViewContainer';
 import PagesScreen from '../pages/PagesViewContainer';
 import ComponentsScreen from '../components/ComponentsViewContainer';
 import ExpenseScreen from '../Expense/ExpenseContainer';
-import AddExpense from '../Expense/AddExpense';
+import AddexpenseScreen from '../Expense/AddExpense';
 
 
 
@@ -27,34 +27,34 @@ const tabNavigationData = [
     icon: iconHome,
   },
   
-  {
-    name: 'Product',
-    component: ProductScreen,
-    icon: iconCalendar,
-  },
+  // {
+  //   name: 'Product',
+  //   component: ProductScreen,
+  //   icon: iconCalendar,
+  // },
   
   {
     name: 'Expense',
     component: ExpenseScreen,
     icon: iconCalendar,
   },
+  // {
+  //   name: 'Calendar',
+  //   component: CalendarScreen,
+  //   icon: iconCalendar,
+  // },
+  // {
+  //   name: 'Grids',
+  //   component: GridsScreen,
+  //   icon: iconGrids,
+  // },
+  // {
+  //   name: 'Pages',
+  //   component: PagesScreen,
+  //   icon: iconPages,
+  // },
   {
-    name: 'Calendar',
-    component: CalendarScreen,
-    icon: iconCalendar,
-  },
-  {
-    name: 'Grids',
-    component: GridsScreen,
-    icon: iconGrids,
-  },
-  {
-    name: 'Pages',
-    component: PagesScreen,
-    icon: iconPages,
-  },
-  {
-    name: 'Components',
+    name: 'Logout',
     component: ComponentsScreen,
     icon: iconComponents,
   },

@@ -35,15 +35,21 @@ export default class ExpenseScreen extends React.Component {
 
     this.state = {
       list: [],
+      prices:[]
     };
   }
 
   componentDidMount() {
-    fetch(url + 'expense')
+    fetch("http://www.amacoerp.com/amaco/php_file/controller/getexpense.php")
       .then(result => result.json())
       .then(data => {
-        console.log;
+        
         this.setState({ list: data });
+        this.state.list.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+        console.log(this.state.list);
+        this.setState({ list: data });
+
+       
       });
     this.updateState = this.updateState.bind(this);
   }
@@ -52,6 +58,7 @@ export default class ExpenseScreen extends React.Component {
     [this.renderRowTwo, this.renderRowThree][this.props.tabIndex];
 
   _openArticle = article => {
+    
     this.props.navigation.navigate('ExpenseView', {
       itemId: article,
     });
@@ -116,81 +123,54 @@ export default class ExpenseScreen extends React.Component {
       style={styles.itemThreeContainer}
       // onPress={() => this._openArticle(item)}
     >
-      {this.state.list.map((v, i) => (
-        <View style={styles.itemThreeSubContainer}>
-          <Card style={styles.item}>
-            <Card.Content>
+      {this.state.list.map((v,i)=>(
+        <Card style={styles.item}>
+          <Card.Content>
+            <View style={styles.itemThreeSubContainer}>
               <View style={styles.itemThreeContent}>
-                <Text style={styles.itemThreeTitle}>
-                  {v.payment_account.name}
-                </Text>
-
                 <View>
                   <Text style={styles.itemThreeBrand}>
+                    {v.payment_account.name}
+                  </Text>
+                  <Text style={styles.itemThreeTitle}>
                     Bill No: {v.referrence_bill_no}
                   </Text>
                   <Text style={styles.itemThreeSubtitle} numberOfLines={1}>
                     {Moment(v.paid_date).format('d MMM YYYY')}
                   </Text>
                 </View>
-              </View>
-              <View style={styles.itemThreeMetaContainer}>
-                {item.badge && (
-                  <View
-                    style={[
-                      styles.badge,
-                      item.badge === 'NEW' && { backgroundColor: colors.green },
-                    ]}
-                  >
-                    <Button
-                      style={styles.itemThreePrice}
-                      styleName="bright"
-                      onPress={() => this._openArticle(v.id)}
+                <View style={styles.itemThreeMetaContainer} >
+                
+                  {item.badge && (
+                    <View
+                      style={[
+                        styles.badge,
+                        item.badge === 'NEW' && {
+                          backgroundColor: colors.primary,
+                          paddingHorizontal: 50,
+                          paddingVertical: 10,
+                        },
+                      ]}
+                      
                     >
-                      View
-                    </Button>
-                  </View>
-                )}
+
+                      <Text
+                        style={{ fontSize: 10, color: colors.white }}
+                        styleName="bright"
+                        onPress={() => this._openArticle(v.id)}
+                        
+                      >
+                        View
+                      </Text>
+                    </View>
+                   
+                  )}
+                  <Text style={styles.itemThreePrice}>{v.amount}</Text>
+                </View>
               </View>
-            </Card.Content>
-          </Card>
-        </View>
-        // <View style={styles.itemThreeSubContainer}>
-        //   <View style={styles.itemThreeContent}>
-
-        //     <Text style={styles.itemThreeTitle}>{v.payment_account.name}</Text>
-
-        //     <View>
-        //       <Text style={styles.itemThreeBrand}>
-        //         Bill No: {v.referrence_bill_no}
-        //       </Text>
-        //       <Text style={styles.itemThreeSubtitle} numberOfLines={1}>
-        //         {Moment(v.paid_date).format('d MMM YYYY')}
-        //       </Text>
-        //     </View>
-        //     <View style={styles.itemThreeMetaContainer}>
-        //       {item.badge && (
-        //         <View
-        //           style={[
-        //             styles.badge,
-        //             item.badge === 'NEW' && { backgroundColor: colors.green },
-        //           ]}
-        //         >
-
-        //           <Button
-        //             style={{ fontSize: 10, color: colors.white }}
-        //             styleName="bright"
-        //             onPress={() => this._openArticle(v.id)}
-        //           >
-        //             View
-        //           </Button>
-
-        //         </View>
-        //       )}
-        //       <Text style={styles.itemThreePrice}>{v.amount}</Text>
-        //     </View>
-        //   </View>
-        // </View>
+            </View>
+          </Card.Content>
+        </Card>
       ))}
       <View style={styles.itemThreeHr} />
     </TouchableOpacity>
@@ -200,44 +180,50 @@ export default class ExpenseScreen extends React.Component {
     <TouchableOpacity
       key={item.id}
       style={styles.itemThreeContainer}
-      onPress={() => this._openArticle(item)}
+      // onPress={() => this._openArticle(item)}
     >
-      {/* <View style={styles.itemThreeSubContainer}>
-        <View style={styles.itemThreeContent}>
-          <Text style={styles.itemThreeTitle}>{item.title}</Text>
-
-          <View>
-            <Text style={styles.itemThreeBrand}>Bill No: {item.brand}</Text>
-            <Text style={styles.itemThreeSubtitle} numberOfLines={1}>
-              5 May 2021
-            </Text>
-          </View>
-          <View style={styles.itemThreeMetaContainer}>
-            {item.badge && (
-              <View
-                style={[
-                  styles.badge,
-                  item.badge === 'NEW' && { backgroundColor: colors.green },
-                ]}
-              >
-                <Text
-                  style={{ fontSize: 10, color: colors.white }}
-                  styleName="bright"
-                >
-                  {item.badge}
+      {this.state.list.map((v, i) => (
+        <Card style={styles.item}>
+          <Card.Content>
+            <View style={styles.itemThreeSubContainer}>
+              <View style={styles.itemThreeContent}>
+                <Text style={styles.itemThreeBrand}>
+                  {v.payment_account.name}
                 </Text>
+                <View>
+                  <Text style={styles.itemThreeTitle}>
+                    Bill No: {v.referrence_bill_no}
+                  </Text>
+                  <Text style={styles.itemThreeSubtitle} numberOfLines={1}>
+                    {Moment(v.paid_date).format('d MMM YYYY')}
+                  </Text>
+                </View>
+                <View style={styles.itemThreeMetaContainer}>
+                  {item.badge && (
+                    <View
+                      style={[
+                        styles.badge,
+                        item.badge === 'NEW' && {
+                          backgroundColor: colors.green,
+                        },
+                      ]}
+                    >
+                      <Text
+                        style={{ fontSize: 10, color: colors.white }}
+                        styleName="bright"
+                        onPress={() => this._openArticle(v.id)}
+                      >
+                        View
+                      </Text>
+                    </View>
+                  )}
+                  <Text style={styles.itemThreePrice}>{item.price}</Text>
+                </View>
               </View>
-            )}
-            <Text style={styles.itemThreePrice}>{item.price}</Text>
-          </View>
-        </View>
-      </View> */}
-      <Card style={styles.item}>
-        <Card.Content>
-          <Title>Card title</Title>
-          <Paragraph>Card content</Paragraph>
-        </Card.Content>
-      </Card>
+            </View>
+          </Card.Content>
+        </Card>
+      ))}
       <View style={styles.itemThreeHr} />
     </TouchableOpacity>
   );
@@ -259,8 +245,8 @@ export default class ExpenseScreen extends React.Component {
               underline
             />
           </View>
-          <TextInput
-            style={styles.textInputStyle}
+          <Searchbar
+            // style={styles.textInputStyle}
             // onChangeText={text => searchFilterFunction(text)}
             // value={search}
             onChangeText={text => this.searchFilterFunction(text)}
@@ -373,6 +359,7 @@ const styles = StyleSheet.create({
   },
   itemThreeContainer: {
     backgroundColor: 'white',
+    padding: 15,
   },
   itemThreeSubContainer: {
     flexDirection: 'row',
@@ -427,12 +414,13 @@ const styles = StyleSheet.create({
   },
   item: {
     flex: 1,
-    height: 120,
+    height: 150,
     paddingVertical: 20,
-    borderColor: colors.primaryLight,
+    borderColor: colors.primaryGradientStart,
     borderWidth: 1,
     borderRadius: 5,
     justifyContent: 'space-around',
     marginHorizontal: 5,
+    marginVertical: 12,
   },
 });

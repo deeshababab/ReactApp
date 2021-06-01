@@ -1,21 +1,16 @@
-import  React from 'react';
+import React from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
-import { 
+import {
   createDrawerNavigator,
   DrawerItem,
   DrawerContentScrollView,
 } from '@react-navigation/drawer';
+import {AuthContext} from '../../components/context';
 import AsyncStorage from '@react-native-community/async-storage';
 import NavigatorView from './RootNavigation';
 import LoginScreen from '../Screen/Login';
 
-
-
-
-
 import AvailableInFullVersion from '../../modules/availableInFullVersion/AvailableInFullVersionViewContainer';
-
-
 
 const iconHome = require('../../../assets/images/drawer/home.png');
 const iconProduct = require('../../../assets/images/drawer/home.png');
@@ -25,73 +20,77 @@ const iconPages = require('../../../assets/images/drawer/pages.png');
 const iconComponents = require('../../../assets/images/drawer/components.png');
 const iconSettings = require('../../../assets/images/drawer/settings.png');
 const iconBlog = require('../../../assets/images/drawer/blog.png');
-const iconExpense = require('../../../assets/images/drawer/expense.png');
-
-
-
+const iconExpense = require('../../../assets/images/drawer/currency.png');
 
 const drawerData = [
   {
     name: 'Home',
     icon: iconHome,
   },
-  {
-    name: 'Product',
-    icon: iconProduct,
-  },
+  // {
+  //   name: 'Product',
+  //   icon: iconProduct,
+  // },
   {
     name: 'Expense',
     icon: iconExpense,
   },
-  {
-    name: 'Calendar',
-    icon: iconCalendar,
-  },
-  {
-    name: 'Grids',
-    icon: iconGrids,
-  },
-  {
-    name: 'Pages',
-    icon: iconPages,
-  },
-  {
-    name: 'Components',
-    icon: iconComponents,
-  },
+  // {
+  //   name: 'Calendar',
+  //   icon: iconCalendar,
+  // },
+  // {
+  //   name: 'Grids',
+  //   icon: iconGrids,
+  // },
+  // {
+  //   name: 'Pages',
+  //   icon: iconPages,
+  // },
+  // {
+  //   name: 'Components',
+  //   icon: iconComponents,
+  // },
 ];
 
 const Drawer = createDrawerNavigator();
 
 function CustomDrawerContent(props) {
-  const SignOut=()=>{
-    AsyncStorage.removeItem('userToken');
-    props.navigation.navigate('Login');
-    
-    }
+  // const SignOut = async () => {
+  //   try {
+  //     await AsyncStorage.setItem('@storage_Key', 'stored value')
+  //   } catch (e) {
+  //     // saving error
+  //   }
+  // }
+  const SignOut = () => {
+    const arr=AsyncStorage.removeItem('userToken');
+    // console.log(JSON.parse(arr))
+    props.navigation.navigate('Home');
+  };
+  const {signOut}=React.useContext(AuthContext);
   return (
-    <DrawerContentScrollView {...props} style={{padding: 0}}>
+    
+    <DrawerContentScrollView {...props} style={{ padding: 0 }}>
       <View style={styles.avatarContainer}>
         <Image
-          style={styles.avatar}
-          source={require('../../../assets/images/drawer/logoblack.png')}
+          // style={styles.avatar}
+          style={{ paddingHorizontal: 12, paddingVertical: 12 }}
+          source={require('../../../assets/images/drawer/logowhite.png')}
         />
-        <View style={{ paddingLeft: 15 }}>
-          <Text style={styles.userName}>Danish</Text>
-          <Text style={{ color: '#4BC1FD' }}>Danish@amacoerp.com</Text>
-        </View>
       </View>
+      <View style={{ paddingLeft: 15 }}>
+        <Text style={styles.userName}>Danish</Text>
+        <Text style={{ color: '#4BC1FD' }}>danish@amacoerp.com</Text>
+      </View>
+
       <View style={styles.divider} />
       {drawerData.map((item, idx) => (
         <DrawerItem
-          key={`drawer_item-${idx+1}`}
+          key={`drawer_item-${idx + 1}`}
           label={() => (
-            <View
-              style={styles.menuLabelFlex}>
-              <Image
-                style={{ width: 20, height: 20}}
-                source={item.icon}
-              />
+            <View style={styles.menuLabelFlex}>
+              <Image style={{ width: 20, height: 20 }} source={item.icon} />
               <Text style={styles.menuTitle}>{item.name}</Text>
             </View>
           )}
@@ -99,7 +98,7 @@ function CustomDrawerContent(props) {
         />
       ))}
       <View style={styles.divider} />
-      <DrawerItem
+      {/* <DrawerItem
         label={() => (
           <View style={styles.menuLabelFlex}>
             <Image
@@ -111,8 +110,8 @@ function CustomDrawerContent(props) {
         )}
         onPress={() => props.navigation.navigate('Blog')}
       />
-      <View style={styles.divider} />
-      <DrawerItem
+      <View style={styles.divider} /> */}
+      {/* <DrawerItem
         label={() => (
           <View style={styles.menuLabelFlex}>
             <Image
@@ -123,25 +122,23 @@ function CustomDrawerContent(props) {
           </View>
         )}
         onPress={() => props.navigation.navigate('Calendar')}
-      />
+      /> */}
       <DrawerItem
         label={() => (
           <View style={styles.menuLabelFlex}>
-            <Image
-              style={{ width: 20, height: 20}}
-              source={iconSettings} 
-            />
+            <Image style={{ width: 20, height: 20 }} source={iconSettings} />
             <Text style={styles.menuTitle}>Logout</Text>
           </View>
         )}
-        onPress={() => SignOut()}
+        onPress={async () => {
+          await signOut();
+        }}
       />
     </DrawerContentScrollView>
   );
 }
 
 export default function App() {
-  
   return (
     <Drawer.Navigator
       drawerStyle={{
@@ -157,15 +154,15 @@ export default function App() {
 const styles = StyleSheet.create({
   menuTitle: {
     marginLeft: 10,
-    color: '#fff'
+    color: '#fff',
   },
   menuLabelFlex: {
     display: 'flex',
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   userName: {
     color: '#fff',
-    fontSize: 18
+    fontSize: 18,
   },
   divider: {
     borderBottomColor: 'white',
@@ -184,6 +181,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     margin: 20,
-    marginBottom: 10
+    marginBottom: 10,
   },
 });

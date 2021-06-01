@@ -5,7 +5,7 @@ import TabNavigator from './MainTabNavigator';
 import GalleryScreen from '../gallery/GalleryViewContainer';
 import AvailableInFullVersion from '../../modules/availableInFullVersion/AvailableInFullVersionViewContainer';
 import SingleExpense from '../Expense/SingleExpense';
-import AddExpense from '../Expense/AddExpense';
+import AddexpenseScreen from '../Expense/AddExpense';
 import ExpenseScreen from '../Expense/ExpenseContainer';
 
 
@@ -22,7 +22,7 @@ import LoginScreen from '../Screen/Login';
 const headerLeftComponent = (props) => {
   return (
     <TouchableOpacity
-      // onPress={props.onPress}
+      onPress={props.onPress}
       style={{
         paddingHorizontal: 16,
         paddingVertical: 12,
@@ -34,6 +34,7 @@ const headerLeftComponent = (props) => {
         style={{
           height: 20,
         }}
+        
       />
     </TouchableOpacity>    
   )
@@ -64,7 +65,7 @@ const StackNavigationData = [
   
  
   {
-    name: 'React Native Starter',
+    name: 'Amaco',
     component: TabNavigator,
     headerLeft: null,
     headerBackground: { source: headerBackground },
@@ -76,6 +77,17 @@ const StackNavigationData = [
   },
   {
     name: 'Expense',
+    component: AddexpenseScreen,
+    headerLeft: null,
+    headerBackground: { source: headerBackground },
+    headerTitleStyle: {
+      fontFamily: fonts.primaryRegular,
+      color: colors.white,
+      fontSize: 18,
+    },
+  },
+  {
+    name: 'Expenses',
     component: ExpenseScreen,
     headerLeft: null,
     headerBackground: { source: headerBackground },
@@ -154,7 +166,7 @@ const StackNavigationData = [
   {
     name: 'ExpenseView',
     component: SingleExpense,
-    headerLeft: headerRightComponent,
+    headerLeft: headerLeftComponent,
     // headerRight:headerRightComponent,
     headerBackground: { source: headerBackground },
     headerTitleStyle: {

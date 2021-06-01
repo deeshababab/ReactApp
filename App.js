@@ -37,10 +37,11 @@ export default function App() {
           const response = await url.post("/auth/login",data);
           
           
-          const { accessToken } = response.data;
+          const { accessToken} = response.data;
           userToken=accessToken;
-          console.log(accessToken);
+        
           await AsyncStorage.setItem('userToken', userToken);
+         
           
         } catch(e) {
           console.log(e);
@@ -50,7 +51,12 @@ export default function App() {
        
        dispatch({type:'LOGIN',id:userName,token:userToken})
       },
-      signOut: () => {
+      signOut: async() => {
+        try {
+          await AsyncStorage.removeItem('userToken');
+        } catch(e) {
+          console.log(e);
+        }
         dispatch({type:'LOGOUT'})
       },
       signUp: () => {

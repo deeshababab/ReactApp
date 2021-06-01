@@ -10,6 +10,7 @@ import {
   Dimensions,
   TouchableOpacity,
 } from 'react-native';
+import { Card } from 'react-native-paper';
 import fetch from 'node-fetch';
 import Moment from 'moment';
 import url from '../../../Axios';
@@ -47,13 +48,27 @@ export default function SingleExpense({ route, navigation }) {
       .then(result => result.json())
       .then(data => {
         // const array = Object.values(data);
-        setexpensedata(data[0].column_data);
-        console.log(data[0].column_data);
+        // setexpensedata(data[0].column_data);
         // const x = {foo: 11, bar: 42};
         // const result = Object.keys(data).map(key => ({[key]: x[key]}));
-        setfile_path(data.referrenceImgUrl);
+        // setfile_path(data.referrenceImgUrl);
 
-        setexpenseList(data[0]);
+        // setexpenseList(data[0]);
+      });
+    fetch(
+      'http://www.amacoerp.com/amaco/php_file/controller/expenseId.php?id=' +
+        itemId,
+    )
+      .then(result => result.json())
+      .then(data => {
+        // const array = Object.values(data);
+
+        console.log(data[0].payment_account);
+        setexpensedata(data[0].column);
+        setfile_path(data[0].payment_account.file_path);
+        setexpenseList(data[0].payment_account);
+        // const x = {foo: 11, bar: 42};
+        // const result = Object.keys(data).map(key => ({[key]: x[key]}));
       });
   }, []);
   const handleClick = () => {
@@ -78,132 +93,136 @@ export default function SingleExpense({ route, navigation }) {
         style={styles1.itemThreeContainer}
         // onPress={() => this._openArticle(item)}
       >
-        <>
-          <View style={styles1.itemThreeSubContainer}>
-            <View style={styles1.itemThreeContent}>
-              <Text style={styles1.itemThreeTitle}>
-                Payment Account:{expenseList.payment_account?.name}
-              </Text>
-
-              <View>
-                <Text style={[styles1.itemThreeTitle, { paddingTop: 15 }]}>
-                  Description
+        <Card style={styles.item}>
+          <Card.Content>
+            <View style={styles1.itemThreeSubContainer}>
+              <View style={styles1.itemThreeContent}>
+                <Text style={styles1.itemThreeTitle}>
+                  Payment Account:  {expenseList.name}
                 </Text>
 
-                <Text
-                  color="#19e7f7"
-                  hCenter
-                  size={15}
-                  style={{ paddingLeft: 15, lineHeight: 25 }}
-                >
-                  {' '}
-                  {expenseList.description}
-                </Text>
-                <Text
-                  style={[
-                    styles1.itemThreeTitle,
-                    { paddingTop: 15, fontSize: 15 },
-                  ]}
-                >
-                  Paid To:
-                </Text>
-                <Text
-                  color="#000"
-                  hCenter
-                  size={15}
-                  style={{ paddingLeft: 15, lineHeight: 25 }}
-                >
-                  {expenseList.paid_to}
-                </Text>
-                <Text
-                  style={[
-                    styles1.itemThreeTitle,
-                    { paddingTop: 15, fontSize: 15 },
-                  ]}
-                >
-                  Date:
-                </Text>
-                <Text
-                  style={[styles1.itemThreeSubtitle, { paddingLeft: 15 }]}
-                  numberOfLines={1}
-                >
-                  {Moment(expenseList.paid_date).format('d MMM YYYY')}
-                </Text>
-              </View>
-            </View>
-          </View>
-          <View style={[styles1.itemThreeHr]} />
+                <View>
+                  <Text style={[styles1.itemThreeTitle, { paddingTop: 15 }]}>
+                    Description
+                  </Text>
 
-          {expensedata.map((content, index) => {
-            return (
-              <View style={{padding:15}}>
-                <Text
-                  style={[
-                    styles1.itemThreeTitle,
-                    { padding: 15, fontSize: 15 },
-                  ]}
-                >
-                  {content.column.name}
-                </Text>
-                {content.column.type === 'file' ? (
-                  <View
-                    style={[styles1.itemThreeSubtitle, { paddingLeft: 15 }]}
-                    numberOfLines={1}
+                  <Text
+                    color="#19e7f7"
+                    hCenter
+                    size={15}
+                    style={{ paddingLeft: 15, lineHeight: 25 }}
                   >
-                    <Image
-                      source={{
-                        uri: filetype(
-                          content.file.split('.')[3],
-                          content.file,
-                          index,
-                        ),
-                      }}
-                      style={{
-                        marginLeft: 15,
-                        width: 100,
-                        height: 100,
-                        padding: 15,
-                      }}
-                    />
-                  </View>
-                ) : (
+                    {' '}
+                    {expenseList.description}
+                  </Text>
+                  <Text
+                    style={[
+                      styles1.itemThreeTitle,
+                      { paddingTop: 15, fontSize: 15 },
+                    ]}
+                  >
+                    Paid To:
+                  </Text>
+                  <Text
+                    color="#000"
+                    hCenter
+                    size={15}
+                    style={{ paddingLeft: 15, lineHeight: 25 }}
+                  >
+                    {expenseList.paid_to}
+                  </Text>
+                  <Text
+                    style={[
+                      styles1.itemThreeTitle,
+                      { paddingTop: 15, fontSize: 15 },
+                    ]}
+                  >
+                    Date:
+                  </Text>
                   <Text
                     style={[styles1.itemThreeSubtitle, { paddingLeft: 15 }]}
                     numberOfLines={1}
                   >
-                    {content.column.type==='date'?Moment(content.value).format('d MMM YYYY'):content.value}
+                    {Moment(expenseList.paid_date).format('d MMM YYYY')}
                   </Text>
-                )}
-              </View>
-            );
-          })}
-          <View style={styles1.itemThreeHr} />
-          <View style={styles1.itemThreeSubContainer}>
-            <Image
-              source={{
-                uri: file_path,
-              }}
-              style={{ marginLeft: 15, width: 100, height: 100 }}
-            />
-            <View style={styles1.itemThreeContent}>
-              <View>
-                <Text style={styles1.itemThreeBrand}>
-                  Bill No:{expenseList.description}
-                </Text>
-                <Text
-                  style={{
-                    fontFamily: fonts.primaryRegular,
-                    fontSize: 14,
-                    paddingLeft: 15,
-                    color: '#000',
-                  }}
-                >
-                  Amount: {expenseList.amount}
-                </Text>
+                </View>
               </View>
             </View>
-          </View>
-        </>
+            <View style={[styles1.itemThreeHr]} />
+
+            {expensedata.map((content, index) => {
+              return (
+                <View style={{ padding: 15 }}>
+                  <Text
+                    style={[
+                      styles1.itemThreeTitle,
+                      { padding: 15, fontSize: 15 },
+                    ]}
+                  >
+                    {content.name}
+                  </Text>
+                  {content.type === 'file' ? (
+                    <View
+                      style={[styles1.itemThreeSubtitle, { paddingLeft: 15 }]}
+                      numberOfLines={1}
+                    >
+                      <Image
+                        source={{
+                          uri: filetype(
+                            content.file.split('.')[3],
+                            content.file,
+                            index,
+                          ),
+                        }}
+                        style={{
+                          marginLeft: 15,
+                          width: 100,
+                          height: 100,
+                          padding: 15,
+                        }}
+                      />
+                    </View>
+                  ) : (
+                    <Text
+                      style={[styles1.itemThreeSubtitle, { paddingLeft: 15 }]}
+                      numberOfLines={1}
+                    >
+                      {content.type === 'date'
+                        ? Moment(content.value).format('d MMM YYYY')
+                        : content.value}
+                    </Text>
+                  )}
+                </View>
+              );
+            })}
+            <View style={styles1.itemThreeHr} />
+            <View style={styles1.itemThreeSubContainer}>
+              <Image
+                source={{
+                  uri: "http://www.amacoerp.com/amaco/php_file/images/"+file_path,
+                }}
+                style={{ marginLeft: 15, width: 100, height: 100 }}
+              />
+              <View style={styles1.itemThreeContent}>
+                <View>
+                  <Text style={styles1.itemThreeBrand}>
+                    Bill No:{expenseList.referrence_bill_no}
+                  </Text>
+                  <Text
+                    style={{
+                      fontFamily: fonts.primaryRegular,
+                      fontSize: 14,
+                      paddingLeft: 15,
+                      color: '#000',
+                    }}
+                  >
+                    Amount: {expenseList.amount}
+                  </Text>
+                </View>
+              </View>
+            </View>
+          </Card.Content>
+        </Card>
       </TouchableOpacity>
 
       {/* </ImageBackground> */}
@@ -281,6 +300,17 @@ const styles1 = StyleSheet.create({
     color: colors.white,
     fontFamily: fonts.primaryBold,
     fontSize: 20,
+  },
+  item: {
+    flex: 1,
+    height: 150,
+    paddingVertical: 20,
+    borderColor: colors.primaryGradientStart,
+    borderWidth: 1,
+    borderRadius: 5,
+    justifyContent: 'space-around',
+    marginHorizontal: 5,
+    marginVertical: 12,
   },
   itemTwoImage: {
     position: 'absolute',

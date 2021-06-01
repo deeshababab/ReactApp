@@ -8,6 +8,7 @@ import StackNavigationData from './stackNavigationData';
 import ExpenseScreen from '../Expense/ExpenseView';
 import SingleExpense from '../Expense/SingleExpense';
 
+
 const Stack = createStackNavigator();
 
 export default function NavigatorView(props) {
