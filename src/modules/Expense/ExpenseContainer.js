@@ -20,6 +20,6 @@ const listData = [
 
 export default compose(
   withState('tabIndex', 'setTabIndex', 0),
-  withState('tabs', 'setTabs', ['New','Verified']),
+  withState('tabs', 'setTabs', ['NEW','VERIFIED']),
   withState('data', 'setData', listData),
 )(ExpenseScreen);

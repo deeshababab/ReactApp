@@ -35,21 +35,31 @@ export default class ExpenseScreen extends React.Component {
 
     this.state = {
       list: [],
-      prices:[]
+      listverify: [],
     };
   }
 
   componentDidMount() {
-    fetch("http://www.amacoerp.com/amaco/php_file/controller/getexpense.php")
+    fetch('http://www.amacoerp.com/amaco/php_file/controller/getexpense.php')
       .then(result => result.json())
+    
       .then(data => {
-        
         this.setState({ list: data });
-        this.state.list.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+        this.state.list.sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at),
+        );
         console.log(this.state.list);
         this.setState({ list: data });
-
-       
+      });
+      fetch('http://www.amacoerp.com/amaco/php_file/controller/getexpenseverify.php')
+      .then(result => result.json())
+      .then(data => {
+        this.setState({ listverify: data });
+        this.state.listverify.sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at),
+        );
+        console.log(this.state.listverify);
+        this.setState({ listverify: data });
       });
     this.updateState = this.updateState.bind(this);
   }
@@ -57,15 +67,15 @@ export default class ExpenseScreen extends React.Component {
   _getRenderItemFunction = () =>
     [this.renderRowTwo, this.renderRowThree][this.props.tabIndex];
 
-  _openArticle = article => {
-    
+  _openArticle = (article,account) => {
     this.props.navigation.navigate('ExpenseView', {
       itemId: article,
+      accountName:account,
     });
   };
 
   searchFilterFunction = text => {
-    const newData = this.state.list.filter(item => {
+    const newData = this.state.list?.filter(item => {
       const itemData = `${item.amount?.toUpperCase()} ${item.payment_account.name?.toUpperCase()}`;
 
       const textData = text.toUpperCase();
@@ -123,47 +133,39 @@ export default class ExpenseScreen extends React.Component {
       style={styles.itemThreeContainer}
       // onPress={() => this._openArticle(item)}
     >
-      {this.state.list.map((v,i)=>(
+      {this.state.list?this.state.list.map((v, i) => (
         <Card style={styles.item}>
           <Card.Content>
             <View style={styles.itemThreeSubContainer}>
               <View style={styles.itemThreeContent}>
-                <View>
-                  <Text style={styles.itemThreeBrand}>
-                    {v.payment_account.name}
-                  </Text>
-                  <Text style={styles.itemThreeTitle}>
-                    Bill No: {v.referrence_bill_no}
-                  </Text>
-                  <Text style={styles.itemThreeSubtitle} numberOfLines={1}>
-                    {Moment(v.paid_date).format('d MMM YYYY')}
-                  </Text>
-                </View>
-                <View style={styles.itemThreeMetaContainer} >
-                
+                <Text style={styles.itemThreeBrand}>
+                  {v.payment_account.name}
+                </Text>
+                <Text style={styles.itemThreeTitle}>
+                  Bill No: {v.referrence_bill_no}
+                </Text>
+                <Text style={styles.itemThreeSubtitle} numberOfLines={1}>
+                  {Moment(v.created_at).format('d MMM YYYY')}
+                </Text>
+
+                <View style={styles.itemThreeMetaContainer}>
                   {item.badge && (
                     <View
                       style={[
                         styles.badge,
                         item.badge === 'NEW' && {
                           backgroundColor: colors.primary,
-                          paddingHorizontal: 50,
-                          paddingVertical: 10,
                         },
                       ]}
-                      
                     >
-
                       <Text
                         style={{ fontSize: 10, color: colors.white }}
                         styleName="bright"
-                        onPress={() => this._openArticle(v.id)}
-                        
+                        onPress={() => this._openArticle(v.id,v.account_name)}
                       >
                         View
                       </Text>
                     </View>
-                   
                   )}
                   <Text style={styles.itemThreePrice}>{v.amount}</Text>
                 </View>
@@ -171,7 +173,8 @@ export default class ExpenseScreen extends React.Component {
             </View>
           </Card.Content>
         </Card>
-      ))}
+      )):<Text />
+    }
       <View style={styles.itemThreeHr} />
     </TouchableOpacity>
   );
@@ -182,7 +185,7 @@ export default class ExpenseScreen extends React.Component {
       style={styles.itemThreeContainer}
       // onPress={() => this._openArticle(item)}
     >
-      {this.state.list.map((v, i) => (
+      {this.state.listverify?this.state.listverify.map((v, i) => (
         <Card style={styles.item}>
           <Card.Content>
             <View style={styles.itemThreeSubContainer}>
@@ -195,7 +198,7 @@ export default class ExpenseScreen extends React.Component {
                     Bill No: {v.referrence_bill_no}
                   </Text>
                   <Text style={styles.itemThreeSubtitle} numberOfLines={1}>
-                    {Moment(v.paid_date).format('d MMM YYYY')}
+                    {Moment(v.created_at).format('d MMM YYYY')}
                   </Text>
                 </View>
                 <View style={styles.itemThreeMetaContainer}>
@@ -204,26 +207,27 @@ export default class ExpenseScreen extends React.Component {
                       style={[
                         styles.badge,
                         item.badge === 'NEW' && {
-                          backgroundColor: colors.green,
+                          backgroundColor: colors.secondary,
                         },
                       ]}
                     >
                       <Text
                         style={{ fontSize: 10, color: colors.white }}
                         styleName="bright"
-                        onPress={() => this._openArticle(v.id)}
+                        onPress={() => this._openArticle(v.id,v.id)}
                       >
-                        View
+                        Pending
                       </Text>
                     </View>
                   )}
-                  <Text style={styles.itemThreePrice}>{item.price}</Text>
+                  <Text style={styles.itemThreePrice}>{v.amount}</Text>
                 </View>
               </View>
             </View>
           </Card.Content>
         </Card>
-      ))}
+      )):<Text />
+    }
       <View style={styles.itemThreeHr} />
     </TouchableOpacity>
   );
@@ -359,11 +363,11 @@ const styles = StyleSheet.create({
   },
   itemThreeContainer: {
     backgroundColor: 'white',
-    padding: 15,
+    padding: 1,
   },
   itemThreeSubContainer: {
     flexDirection: 'row',
-    paddingVertical: 10,
+    paddingVertical: 1,
   },
   itemThreeImage: {
     height: 100,
@@ -391,6 +395,7 @@ const styles = StyleSheet.create({
   },
   itemThreeMetaContainer: {
     flexDirection: 'row',
+    paddingVertical:10,
     justifyContent: 'space-between',
     alignItems: 'center',
   },
@@ -414,8 +419,8 @@ const styles = StyleSheet.create({
   },
   item: {
     flex: 1,
-    height: 150,
-    paddingVertical: 20,
+    height: 120,
+    paddingVertical: 1,
     borderColor: colors.primaryGradientStart,
     borderWidth: 1,
     borderRadius: 5,

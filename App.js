@@ -45,7 +45,7 @@ export default function App() {
           
         } catch(e) {
           console.log(e);
-          alert('Incorrect email or Password');
+          alert(e);
         }
        
        

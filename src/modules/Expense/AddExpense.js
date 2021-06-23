@@ -6,9 +6,11 @@ import {
   ImageBackground,
   SectionList,
   ScrollView,
+  Image,
 } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 import Dialog from 'react-native-dialog';
+import Moment from 'moment';
 import {
   List,
   Button,
@@ -19,6 +21,7 @@ import {
   TextInput,
   Card,
 } from 'react-native-paper';
+import { useIsFocused } from '@react-navigation/native';
 import DatePicker from 'react-native-datepicker';
 import fetch from 'node-fetch';
 import DocumentPicker from 'react-native-document-picker';
@@ -29,6 +32,7 @@ import { colors, fonts } from '../../styles';
 import { Text } from '../../components/StyledText';
 import color from 'color';
 const iconview = require('../../../assets/images/drawer/view.jpg');
+const arrowIcon = require('../../../assets/images/pages/arrow.png');
 
 export default function AddexpenseScreen(props) {
   // const rnsUrl = 'https://reactnativestarter.com';
@@ -86,21 +90,32 @@ export default function AddexpenseScreen(props) {
   const [amount, setamount] = React.useState('');
   const [paidto, setpaidto] = React.useState('');
   const [paidby, setpaidby] = React.useState('');
+  const [paidbyname, setpaidbyname] = React.useState('');
+  const [categoryname, setcategoryname] = React.useState('');
   const [refbill, setrefbill] = React.useState('');
   const [taxamount, settaxamount] = React.useState('');
   const [description, setdescription] = React.useState('');
-  const [date, setDate] = React.useState(new Date());
+  const [date, setDate] = React.useState(
+    Moment(new Date()).format('YYYY-MM-DD'),
+  );
   const [expensename, setexpensename] = React.useState('');
+  const isVisible = useIsFocused();
   React.useEffect(() => {
     fetch('http://www.amacoerp.com/amaco/public/api/account-categories')
       .then(result => result.json())
       .then(data => {
         setList(data);
+      })
+      .catch(error => {
+        console.log(error);
       });
     fetch('http://www.amacoerp.com/amaco/public/api/payment-account')
       .then(result => result.json())
       .then(data => {
         setpaymentaccount(data);
+      })
+      .catch(error => {
+        console.log(error);
       });
 
     // axios
@@ -112,82 +127,84 @@ export default function AddexpenseScreen(props) {
     //   // handle error
     //   alert(error.message);
     // })
-    
+
     return setisAlive(true);
-  }, [isAlive,check]);
+  }, [isAlive, check, isVisible]);
 
   const openMenu = () => setVisible(true);
 
   const closeMenu = () => setVisible(false);
-  const openMenu1 = () => setVisible1(true);
+  const openMenu1 = () => {
+    setVisible1(true);
+  };
 
   const closeMenu1 = () => setVisible1(false);
   const openMenupayment = () => setvisiblepayment(true);
 
   const closeMenupayment = () => setvisiblepayment(false);
-  const setValue = n => {
+  const setValue = (n, v) => {
     setpaidby(n);
+    setpaidbyname(v);
     closeMenupayment();
   };
-  const checkcat = (v, data,n) => {
-    
-    
-    closeMenu();
+
+  const checkcat1 = (v, data, n) => {
     setcheck(false);
+    closeMenu();
+    data.map((item, i) => {
+      if (
+        item.sub_categories.length >= 2 &&
+        item.sub_categories[0].category.parent_id === v
+      ) {
+        const arr = item.sub_categories.filter(season => {
+          return season.category.parent_id === v;
+        });
+
+        setList1(arr);
+
+        setcheck(true);
+      }
+
+      FieldSet(v, item.sub_categories[0]?.category.id, n);
+      setexpensename(n);
+    });
+  };
+
+  const checkcat = (v, data, n) => {
+    setcheck(false);
+    closeMenu();
 
     data.map((item, i) => {
       if (
         item.sub_categories.length >= 2 &&
         item.sub_categories[0].category.parent_id === v
       ) {
-       
         const arr = item.sub_categories.filter(season => {
           return season.category.parent_id === v;
         });
-        console.log(item.sub_categories[0].category.parent_id);
+
         setList1(arr);
 
-        
         setcheck(true);
-        
       }
-      FieldSet(v,item.sub_categories[0]?.category.id);
+      FieldSet(v, item.sub_categories[0]?.category.id, n);
       setexpensename(n);
-     
-      
+      if (!categoryname) {
+        setcategoryname(n);
+      }
     });
-    
-
-    //   const episodios = List.filter(seasson => {
-    //     seasson.sub_categories.filter(seasson1 => {
-    //    return  seasson1.category.parent_id=== 1; // sample number
-    //   })
-    // })
-
-    // const map =episodios.map(element => element);
-
-    // setList1(map)
-    // setList1(itemNames)
   };
 
-
-
-  
-
-  const FieldSet = (v,n) => {
+  const FieldSet = (v, n, name) => {
     fetch(`http://www.amacoerp.com/amaco/public/api/columns/${v}`)
       .then(result => result.json())
       .then(data => {
         if (data[0].column.length) {
           setList3(data[0].column);
-          console.log(data[0].column['name']);
-         
-         
-          
-         
         }
-        
-        
+      })
+      .catch(error => {
+        console.log(error);
       });
   };
   const RecursiveComponent = category => {
@@ -202,11 +219,17 @@ export default function AddexpenseScreen(props) {
         <Menu
           visible={visible1}
           onDismiss={closeMenu1}
-          anchor={<Button onPress={openMenu1}>Choose Sub Category</Button>}
+          anchor={
+            <Button onPress={e => setVisible1(true)}>
+              Choose Sub Category
+            </Button>
+          }
         >
-          {category.map((item, i) => (
+          {List1.map((item, i) => (
             <Menu.Item
-              onPress={() => checkcat(item.category.id, List1,item.category.name)}
+              onPress={() =>
+                checkcat(item.category.id, List1, item.category.name,setcolumnid(item.category.id))
+              }
               title={item.category.name}
             />
           ))}
@@ -230,7 +253,6 @@ export default function AddexpenseScreen(props) {
       console.log('res : ' + JSON.stringify(res));
       // Setting the state to show single file attributes
       setSingleFile(res);
-      console.log(res);
     } catch (err) {
       setSingleFile(null);
       // Handling any exception (If any)
@@ -271,7 +293,7 @@ export default function AddexpenseScreen(props) {
   };
   const handleComment = (e, item, i) => {
     let result = List3; // copy state
-    result = result.map(el => {
+    result.map(el => {
       // map array to replace the old comment with the new one
       if (el.name === item.name) {
         el.text = e;
@@ -302,7 +324,7 @@ export default function AddexpenseScreen(props) {
       name: singleFile.name,
       uri: singleFile.uri,
       type: singleFile.type,
-    })
+    });
     formData.append('bank_slip', JSON.stringify(res));
     formData.append('paid_date', date);
     formData.append('referrence_bill_no', refbill);
@@ -330,11 +352,12 @@ export default function AddexpenseScreen(props) {
       .then(response => {
         console.log('hd' + response.data);
         alert('Data Saved successfully');
-        props.navigation.navigate('Expenses');
-        
+        props.navigation.goBack();
+        // props.navigation.navigate('Expenses');
       })
       .catch(error => console.log('hsdfff' + error));
-      
+    props.navigation.goBack();
+    props.navigation.navigate('Expenses');
   };
 
   return (
@@ -400,16 +423,38 @@ export default function AddexpenseScreen(props) {
       >
         +
       </Button> */}
-      <Avatar
-        size="medium"
-        overlayContainerStyle={{ backgroundColor: 'blue' }}
-        icon={{ name: 'eye', color: 'white', type: 'font-awesome' }}
-        rounded
-        activeOpacity={0.7}
-        containerStyle={{ marginLeft: 290, marginRight: 40, marginTop: 15 }}
-        onPress={() => props.navigation.navigate('Expenses')}
-      />
-      
+
+      <View
+        style={{
+          paddingVertical: 10,
+          paddingHorizontal: 10,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
+        <Avatar
+          size="medium"
+          overlayContainerStyle={{ backgroundColor: 'blue' }}
+          icon={{ name: 'arrow-left', color: 'white', type: 'font-awesome' }}
+          rounded
+          activeOpacity={0.7}
+          onPress={() => {
+            props.navigation.goBack();
+            props.navigation.navigate('Expense');
+          }}
+        />
+
+        <Text />
+        <Avatar
+          size="medium"
+          overlayContainerStyle={{ backgroundColor: 'blue' }}
+          icon={{ name: 'eye', color: 'white', type: 'font-awesome' }}
+          rounded
+          activeOpacity={0.7}
+          onPress={() => props.navigation.navigate('Expenses')}
+        />
+      </View>
       <View style={styles.container}>
         <Provider>
           <View
@@ -426,12 +471,27 @@ export default function AddexpenseScreen(props) {
             >
               {paymentaccount.map((item, i) => (
                 <Menu.Item
-                  onPress={() => setValue(item.id)}
+                  onPress={() => setValue(item.id, item.name)}
                   title={item.name}
                 />
               ))}
             </Menu>
+            {paidby !== '' && (
+              <Text
+                style={{
+                  fontFamily: fonts.primaryBold,
+                  fontSize: 20,
+                  paddingLeft: 1,
+                  textAlign: 'center',
+                  paddingBottom: 15,
+                  color: 'primary',
+                }}
+              >
+                {paidbyname}
+              </Text>
+            )}
           </View>
+
           <View
             style={{
               paddingTop: 50,
@@ -446,12 +506,33 @@ export default function AddexpenseScreen(props) {
             >
               {List.map((item, i) => (
                 <Menu.Item
-                  onPress={() => checkcat(item.category.id, List,item.category.name)}
+                  onPress={() =>
+                    checkcat1(
+                      item.category.id,
+                      List,
+                      item.category.name,
+                    )
+                  }
                   title={item.category.name}
                 />
               ))}
             </Menu>
+            {/* {expensename? ( */}
+            {/* <Text
+              style={{
+                fontFamily: fonts.primaryBold,
+                fontSize: 20,
+                paddingLeft: 1,
+                textAlign: 'center',
+                paddingBottom: 15,
+                color: 'primary',
+              }}
+            >
+              {expensename}
+            </Text> */}
+            {/* ):<Text></Text>} */}
           </View>
+
           <View
             style={{
               paddingTop: 50,
@@ -475,17 +556,21 @@ export default function AddexpenseScreen(props) {
             {check && RecursiveComponent(List1)}
           </View>
         </Provider>
-        
+
         <ScrollView>
-          {!check &&
-          (
-            <Text style={{fontFamily: fonts.primaryBold,
-              fontSize: 20,
-              paddingLeft:1,
-              paddingBottom:15,
-              color: '#5F5F5F'}}>{expensename}</Text>
-          )
-          }
+          {!check && (
+            <Text
+              style={{
+                fontFamily: fonts.primaryBold,
+                fontSize: 20,
+                paddingLeft: 1,
+                paddingBottom: 15,
+                color: '#5F5F5F',
+              }}
+            >
+              {expensename}
+            </Text>
+          )}
           {!check &&
             List3.map((item, i) => {
               if (item.type === 'text') {
@@ -552,8 +637,6 @@ export default function AddexpenseScreen(props) {
                 mode="date"
                 placeholder="select date"
                 format="YYYY-MM-DD"
-                minDate="2016-05-01"
-                maxDate="2016-06-01"
                 confirmBtnText="Confirm"
                 cancelBtnText="Cancel"
                 customStyles={{
@@ -678,8 +761,6 @@ export default function AddexpenseScreen(props) {
             </Button>
           )}
         </ScrollView>
-        
-              
       </View>
     </>
   );

@@ -10,32 +10,37 @@ const galleryIcon = require('../../../assets/images/pages/gallery.png');
 const profileIcon = require('../../../assets/images/pages/profile.png');
 const loginIcon = require('../../../assets/images/pages/login.png');
 const blogIcon = require('../../../assets/images/pages/blog.png');
+const total = require('../../../assets/images/pages/total.png');
+const expenseIcon = require('../../../assets/images/pages/eye.png');
+const check = require('../../../assets/images/pages/check.png');
 
 export default function HomeScreen(props) {
   return (
     <View style={styles.container}>
       <View style={styles.row}>
         <TouchableOpacity
-          onPress={() => props.navigation.navigate('Charts')}
+          onPress={() => props.navigation.navigate('Expense')}
           style={styles.item}
         >
           <Image
             resizeMode="contain"
-            source={chartIcon}
+            source={total}
             style={styles.itemImage}
           />
-          <Text style={styles.itemText}>Charts</Text>
+          <Text style={styles.itemText}>Total Expenses</Text>
         </TouchableOpacity>
+      </View>
+      <View style={styles.row}>
         <TouchableOpacity
-          onPress={() => props.navigation.navigate('Gallery')}
+          onPress={() => props.navigation.navigate('Expenses')}
           style={styles.item}
         >
           <Image
             resizeMode="contain"
-            source={galleryIcon}
+            source={expenseIcon}
             style={styles.itemImage}
           />
-          <Text style={styles.itemText}>Gallery</Text>
+          <Text style={styles.itemText}>New Expenses</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => props.navigation.navigate('Profile')}
@@ -43,10 +48,10 @@ export default function HomeScreen(props) {
         >
           <Image
             resizeMode="contain"
-            source={profileIcon}
+            source={check}
             style={styles.itemImage}
           />
-          <Text style={styles.itemText}>Profile</Text>
+          <Text style={styles.itemText}>Verified Expenses</Text>
         </TouchableOpacity>
       </View>
       {/* <View style={styles.row}>

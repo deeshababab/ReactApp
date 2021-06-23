@@ -53,11 +53,7 @@ const tabNavigationData = [
   //   component: PagesScreen,
   //   icon: iconPages,
   // },
-  {
-    name: 'Logout',
-    component: ComponentsScreen,
-    icon: iconComponents,
-  },
+  
   
 ];
 

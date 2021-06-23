@@ -38,7 +38,7 @@ export default function SingleExpense({ route, navigation }) {
   };
   const rnsUrl = 'https://reactnativestarter.com';
 
-  const { itemId, otherParam } = route.params;
+  const { itemId, accountName } = route.params;
   const [expenseList, setexpenseList] = React.useState([]);
   const [expensedata, setexpensedata] = React.useState([]);
   const [account_name, setaccount_name] = React.useState('');
@@ -52,21 +52,17 @@ export default function SingleExpense({ route, navigation }) {
         // const x = {foo: 11, bar: 42};
         // const result = Object.keys(data).map(key => ({[key]: x[key]}));
         // setfile_path(data.referrenceImgUrl);
-
         // setexpenseList(data[0]);
       });
-    fetch(
-      'http://www.amacoerp.com/amaco/php_file/controller/expenseId.php?id=' +
-        itemId,
-    )
+    fetch('http://www.amacoerp.com/amaco/public/api/expense/' + itemId)
       .then(result => result.json())
       .then(data => {
         // const array = Object.values(data);
 
-        console.log(data[0].payment_account);
-        setexpensedata(data[0].column);
-        setfile_path(data[0].payment_account.file_path);
-        setexpenseList(data[0].payment_account);
+        console.log(data[0].payment_account.file_path);
+        setexpensedata(data[0].column_data);
+        setfile_path(data[0].file_path);
+        setexpenseList(data[0]);
         // const x = {foo: 11, bar: 42};
         // const result = Object.keys(data).map(key => ({[key]: x[key]}));
       });
@@ -97,8 +93,8 @@ export default function SingleExpense({ route, navigation }) {
           <Card.Content>
             <View style={styles1.itemThreeSubContainer}>
               <View style={styles1.itemThreeContent}>
-                <Text style={styles1.itemThreeTitle}>
-                  Payment Account:  {expenseList.name}
+                <Text style={[styles1.itemThreeTitle, { paddingBottom: 15 }]}>
+                  Payment Account: {accountName}
                 </Text>
 
                 <View>
@@ -108,11 +104,9 @@ export default function SingleExpense({ route, navigation }) {
 
                   <Text
                     color="#19e7f7"
-                    hCenter
                     size={15}
-                    style={{ paddingLeft: 15, lineHeight: 25 }}
+                    style={{ lineHeight: 25, paddingLeft: 15 }}
                   >
-                    {' '}
                     {expenseList.description}
                   </Text>
                   <Text
@@ -152,19 +146,13 @@ export default function SingleExpense({ route, navigation }) {
 
             {expensedata.map((content, index) => {
               return (
-                <View style={{ padding: 15 }}>
-                  <Text
-                    style={[
-                      styles1.itemThreeTitle,
-                      { padding: 15, fontSize: 15 },
-                    ]}
-                  >
-                    {content.name}
+                <View style={{ paddingLeft: 15, paddingTop: 15 }}>
+                  <Text style={[styles1.itemThreeTitle, { fontSize: 15 }]}>
+                    {content.column.name}
                   </Text>
-                  {content.type === 'file' ? (
+                  {content.column.type === 'file' ? (
                     <View
                       style={[styles1.itemThreeSubtitle, { paddingLeft: 15 }]}
-                      numberOfLines={1}
                     >
                       <Image
                         source={{
@@ -178,14 +166,16 @@ export default function SingleExpense({ route, navigation }) {
                           marginLeft: 15,
                           width: 100,
                           height: 100,
-                          padding: 15,
+                          // padding: 15,
                         }}
                       />
                     </View>
                   ) : (
                     <Text
-                      style={[styles1.itemThreeSubtitle, { paddingLeft: 15 }]}
-                      numberOfLines={1}
+                      style={[
+                        styles1.itemThreeSubtitle,
+                        { paddingLeft: 15, paddingBottom: 15 },
+                      ]}
                     >
                       {content.type === 'date'
                         ? Moment(content.value).format('d MMM YYYY')
@@ -199,13 +189,21 @@ export default function SingleExpense({ route, navigation }) {
             <View style={styles1.itemThreeSubContainer}>
               <Image
                 source={{
-                  uri: "http://www.amacoerp.com/amaco/php_file/images/"+file_path,
+                  uri:
+                    'http://www.amacoerp.com/amaco/public/' +file_path,
                 }}
                 style={{ marginLeft: 15, width: 100, height: 100 }}
               />
               <View style={styles1.itemThreeContent}>
                 <View>
-                  <Text style={styles1.itemThreeBrand}>
+                  <Text
+                    style={{
+                      fontFamily: fonts.primaryRegular,
+                      fontSize: 14,
+                      paddingLeft: 15,
+                      color: '#617ae1',
+                    }}
+                  >
                     Bill No:{expenseList.referrence_bill_no}
                   </Text>
                   <Text
@@ -333,7 +331,7 @@ const styles1 = StyleSheet.create({
   },
   itemThreeSubContainer: {
     flexDirection: 'row',
-    paddingVertical: 10,
+    paddingVertical: 15,
   },
   itemThreeImage: {
     height: 100,
