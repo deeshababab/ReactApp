@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const url = 'http://www.amacoerp.com/amaco_test/public/api/'
+const url = 'http://www.amacoerp.com/amaco/public/api/'
     
    
 export default url;

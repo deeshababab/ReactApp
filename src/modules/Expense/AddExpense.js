@@ -92,6 +92,7 @@ export default function AddexpenseScreen(props) {
   const [paidby, setpaidby] = React.useState('');
   const [paidbyname, setpaidbyname] = React.useState('');
   const [categoryname, setcategoryname] = React.useState('');
+  const [cname, setcname] = React.useState('');
   const [refbill, setrefbill] = React.useState('');
   const [taxamount, settaxamount] = React.useState('');
   const [description, setdescription] = React.useState('');
@@ -133,7 +134,16 @@ export default function AddexpenseScreen(props) {
 
   const openMenu = () => setVisible(true);
 
-  const closeMenu = () => setVisible(false);
+  // const closeMenu = (n) =>{
+
+  //   setVisible(false)
+  //   console.log(n)
+  // }
+  // ;
+  async function closeMenu(n) {
+    setVisible(false);
+    setcname(n)
+  }
   const openMenu1 = () => {
     setVisible1(true);
   };
@@ -150,7 +160,10 @@ export default function AddexpenseScreen(props) {
 
   const checkcat1 = (v, data, n) => {
     setcheck(false);
-    closeMenu();
+    if(cname==="")
+    {
+      closeMenu(n)
+    }
     data.map((item, i) => {
       if (
         item.sub_categories.length >= 2 &&
@@ -216,24 +229,33 @@ export default function AddexpenseScreen(props) {
           justifyContent: 'center',
         }}
       >
-        <Menu
-          visible={visible1}
-          onDismiss={closeMenu1}
-          anchor={
-            <Button onPress={e => setVisible1(true)}>
-              Choose Sub Category
-            </Button>
-          }
-        >
-          {List1.map((item, i) => (
-            <Menu.Item
-              onPress={() =>
-                checkcat(item.category.id, List1, item.category.name,setcolumnid(item.category.id))
+        {expensename !== '' && (
+          <>
+            <Menu
+              visible={visible1}
+              onDismiss={closeMenu1}
+              anchor={
+                <Button onPress={() => setVisible1(true)}>
+                  Choose Sub Category
+                </Button>
               }
-              title={item.category.name}
-            />
-          ))}
-        </Menu>
+            >
+              {List1.map((item, i) => (
+                <Menu.Item
+                  onPress={() =>
+                    checkcat(
+                      item.category.id,
+                      List1,
+                      item.category.name,
+                      setcolumnid(item.category.id),
+                    )
+                  }
+                  title={item.category.name}
+                />
+              ))}
+            </Menu>
+          </>
+        )}
       </View>
     );
   };
@@ -507,31 +529,28 @@ export default function AddexpenseScreen(props) {
               {List.map((item, i) => (
                 <Menu.Item
                   onPress={() =>
-                    checkcat1(
-                      item.category.id,
-                      List,
-                      item.category.name,
-                    )
+                    checkcat1(item.category.id, List, item.category.name)
                   }
                   title={item.category.name}
                 />
               ))}
             </Menu>
             {/* {expensename? ( */}
-            {/* <Text
-              style={{
-                fontFamily: fonts.primaryBold,
-                fontSize: 20,
-                paddingLeft: 1,
-                textAlign: 'center',
-                paddingBottom: 15,
-                color: 'primary',
-              }}
-            >
-              {expensename}
-            </Text> */}
+
             {/* ):<Text></Text>} */}
           </View>
+          {/* <Text
+            style={{
+              fontFamily: fonts.primaryBold,
+              fontSize: 20,
+              paddingLeft: 10,
+              textAlign: 'center',
+              paddingBottom: 1,
+              color: 'primary',
+            }}
+          >
+            {cname}
+          </Text> */}
 
           <View
             style={{
@@ -540,19 +559,6 @@ export default function AddexpenseScreen(props) {
               justifyContent: 'center',
             }}
           >
-            {/* <Menu
-          visible={visible1}
-          onDismiss={closeMenu1}
-          anchor={<Button onPress={openMenu1}>Show menu</Button>}
-        >
-          {List1.map((item, i) => (
-            <Menu.Item
-              onPress={() => checkcat(item.category.id)}
-              title={item.category.name}
-            />
-          ))}
-        </Menu> */}
-
             {check && RecursiveComponent(List1)}
           </View>
         </Provider>

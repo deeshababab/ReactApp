@@ -54,7 +54,7 @@ export default function SingleExpense({ route, navigation }) {
         // setfile_path(data.referrenceImgUrl);
         // setexpenseList(data[0]);
       });
-    fetch('http://www.amacoerp.com/amaco/public/api/expense/' + itemId)
+    fetch(url+'expense/' + itemId)
       .then(result => result.json())
       .then(data => {
         // const array = Object.values(data);
