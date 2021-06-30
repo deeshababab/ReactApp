@@ -13,7 +13,7 @@ import {
 import { Card } from 'react-native-paper';
 import fetch from 'node-fetch';
 import Moment from 'moment';
-import url from '../../../Axios';
+import url,{phpurl} from '../../../Axios';
 
 import { fonts, colors } from '../../styles';
 import { Button } from '../../components';
@@ -48,21 +48,19 @@ export default function SingleExpense({ route, navigation }) {
       .then(result => result.json())
       .then(data => {
         // const array = Object.values(data);
-        // setexpensedata(data[0].column_data);
-        // const x = {foo: 11, bar: 42};
-        // const result = Object.keys(data).map(key => ({[key]: x[key]}));
-        // setfile_path(data.referrenceImgUrl);
-        // setexpenseList(data[0]);
-      });
-    fetch(url+'expense/' + itemId)
-      .then(result => result.json())
-      .then(data => {
-        // const array = Object.values(data);
 
-        console.log(data[0].payment_account.file_path);
+        console.log(data[0].column_data);
         setexpensedata(data[0].column_data);
         setfile_path(data[0].file_path);
         setexpenseList(data[0]);
+        console.log(data[0].account_category_id);
+        fetch(
+          `${phpurl}accountname.php?id=${data[0].account_category_id}`,
+        )
+          .then(result => result.json())
+          .then(data => {
+            setaccount_name(data[0].name);
+          });
         // const x = {foo: 11, bar: 42};
         // const result = Object.keys(data).map(key => ({[key]: x[key]}));
       });
@@ -94,7 +92,7 @@ export default function SingleExpense({ route, navigation }) {
             <View style={styles1.itemThreeSubContainer}>
               <View style={styles1.itemThreeContent}>
                 <Text style={[styles1.itemThreeTitle, { paddingBottom: 15 }]}>
-                  Payment Account: {accountName}
+                  Payment Account: <Text>{account_name}</Text>
                 </Text>
 
                 <View>
@@ -163,10 +161,10 @@ export default function SingleExpense({ route, navigation }) {
                           ),
                         }}
                         style={{
-                          marginLeft: 15,
+                          marginTop: 15,
                           width: 100,
                           height: 100,
-                          // padding: 15,
+                          marginBottom: 15,
                         }}
                       />
                     </View>
@@ -186,13 +184,15 @@ export default function SingleExpense({ route, navigation }) {
               );
             })}
             <View style={styles1.itemThreeHr} />
+            <Text style={[styles1.itemThreeTitle, { paddingTop: 15,paddingLeft:30 }]}>
+              Reference Bill
+            </Text>
             <View style={styles1.itemThreeSubContainer}>
               <Image
                 source={{
-                  uri:
-                    'http://www.amacoerp.com/amaco/public/' +file_path,
+                  uri: 'http://www.amacoerp.com/amaco/public/' + file_path,
                 }}
-                style={{ marginLeft: 15, width: 100, height: 100 }}
+                style={{ marginLeft: 30, width: 100, height: 100 }}
               />
               <View style={styles1.itemThreeContent}>
                 <View>
@@ -377,7 +377,8 @@ const styles1 = StyleSheet.create({
     flex: 1,
     height: 1,
     backgroundColor: '#e3e3e3',
-    marginRight: -15,
+    marginRight: 15,
+    marginLeft: 15,
   },
   badge: {
     backgroundColor: colors.secondary,

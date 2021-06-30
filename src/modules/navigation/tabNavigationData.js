@@ -5,7 +5,7 @@ import GridsScreen from '../grids/GridsViewContainer';
 import PagesScreen from '../pages/PagesViewContainer';
 import ComponentsScreen from '../components/ComponentsViewContainer';
 import ExpenseScreen from '../Expense/ExpenseContainer';
-import AddexpenseScreen from '../Expense/AddExpense';
+import AddexpenseScreen from '../Expense/demoadd';
 
 
 

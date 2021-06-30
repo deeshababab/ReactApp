@@ -27,6 +27,7 @@ import fetch from 'node-fetch';
 import DocumentPicker from 'react-native-document-picker';
 import axios from 'axios';
 import { Icon, Avatar } from 'react-native-elements';
+import url,{phpurl} from '../../../Axios';
 
 import { colors, fonts } from '../../styles';
 import { Text } from '../../components/StyledText';
@@ -102,18 +103,19 @@ export default function AddexpenseScreen(props) {
   const [expensename, setexpensename] = React.useState('');
   const isVisible = useIsFocused();
   React.useEffect(() => {
-    fetch('http://www.amacoerp.com/amaco/public/api/account-categories')
+    let isMounted = true;
+    fetch(url+'account-categories')
       .then(result => result.json())
       .then(data => {
-        setList(data);
+        if (isMounted) setList(data);
       })
       .catch(error => {
         console.log(error);
       });
-    fetch('http://www.amacoerp.com/amaco/public/api/payment-account')
+    fetch(url+'payment-account')
       .then(result => result.json())
       .then(data => {
-        setpaymentaccount(data);
+        if (isMounted) setpaymentaccount(data);
       })
       .catch(error => {
         console.log(error);
@@ -128,22 +130,19 @@ export default function AddexpenseScreen(props) {
     //   // handle error
     //   alert(error.message);
     // })
-
+    // return () => {
+    //   isMounted = false;
+    //   setisAlive(true);
+    // };
     return setisAlive(true);
   }, [isAlive, check, isVisible]);
 
   const openMenu = () => setVisible(true);
 
-  // const closeMenu = (n) =>{
-
-  //   setVisible(false)
-  //   console.log(n)
-  // }
-  // ;
-  async function closeMenu(n) {
+  const closeMenu = n => {
     setVisible(false);
-    setcname(n)
-  }
+    console.log(n);
+  };
   const openMenu1 = () => {
     setVisible1(true);
   };
@@ -160,10 +159,7 @@ export default function AddexpenseScreen(props) {
 
   const checkcat1 = (v, data, n) => {
     setcheck(false);
-    if(cname==="")
-    {
-      closeMenu(n)
-    }
+    closeMenu();
     data.map((item, i) => {
       if (
         item.sub_categories.length >= 2 &&
@@ -174,7 +170,7 @@ export default function AddexpenseScreen(props) {
         });
 
         setList1(arr);
-
+        setcategoryname(n);
         setcheck(true);
       }
 
@@ -209,7 +205,7 @@ export default function AddexpenseScreen(props) {
   };
 
   const FieldSet = (v, n, name) => {
-    fetch(`http://www.amacoerp.com/amaco/public/api/columns/${v}`)
+    fetch(url+`columns/${v}`)
       .then(result => result.json())
       .then(data => {
         if (data[0].column.length) {
@@ -229,33 +225,29 @@ export default function AddexpenseScreen(props) {
           justifyContent: 'center',
         }}
       >
-        {expensename !== '' && (
-          <>
-            <Menu
-              visible={visible1}
-              onDismiss={closeMenu1}
-              anchor={
-                <Button onPress={() => setVisible1(true)}>
-                  Choose Sub Category
-                </Button>
+        <Menu
+          visible={visible1}
+          onDismiss={closeMenu1}
+          anchor={
+            <Button onPress={() => setVisible1(true)}>
+              Choose Sub Category
+            </Button>
+          }
+        >
+          {List1.map((item, i) => (
+            <Menu.Item
+              onPress={() =>
+                checkcat(
+                  item.category.id,
+                  List1,
+                  item.category.name,
+                  setcolumnid(item.category.id),
+                )
               }
-            >
-              {List1.map((item, i) => (
-                <Menu.Item
-                  onPress={() =>
-                    checkcat(
-                      item.category.id,
-                      List1,
-                      item.category.name,
-                      setcolumnid(item.category.id),
-                    )
-                  }
-                  title={item.category.name}
-                />
-              ))}
-            </Menu>
-          </>
-        )}
+              title={item.category.name}
+            />
+          ))}
+        </Menu>
       </View>
     );
   };
@@ -314,16 +306,20 @@ export default function AddexpenseScreen(props) {
     }
   };
   const handleComment = (e, item, i) => {
-    let result = List3; // copy state
+    const result = List3; // copy state
     result.map(el => {
       // map array to replace the old comment with the new one
+      console.log(el.name)
+      console.log(item.name)
       if (el.name === item.name) {
+        console.log('deeee')
         el.text = e;
         el.column_id = i;
       }
       return el;
     });
     // setfield(result);
+    console.log(result)
     setisAlive(false);
     // set state with new comment
   };
@@ -368,84 +364,21 @@ export default function AddexpenseScreen(props) {
     console.log(formData);
     axios
       .post(
-        `http://www.amacoerp.com/amaco/php_file/controller/expense.php`,
+        `${phpurl}/expense.php`,
         formData,
       )
       .then(response => {
         console.log('hd' + response.data);
         alert('Data Saved successfully');
         props.navigation.goBack();
-        // props.navigation.navigate('Expenses');
+        props.navigation.navigate('Expenses');
       })
       .catch(error => console.log('hsdfff' + error));
-    props.navigation.goBack();
-    props.navigation.navigate('Expenses');
+ 
   };
 
   return (
-    // <View style={styles.container}>
-
-    //   <ImageBackground
-    //     source={require('../../../assets/images/background.png')}
-    //     style={styles.bgImage}
-    //     resizeMode="cover"
-    //   >
-    //     <View style={styles.section}>
-    //       <Text size={20} white>
-    //         Home
-    //       </Text>
-    //     </View>
-    //     <List.Item
-    //       title="First Item"
-    //       description="Item description"
-    //       left={props => <List.Icon {...props} icon="folder" />}
-    //     />
-
-    //     <View style={styles.section}>
-    //       <Text color="#19e7f7" size={15}>
-    //         The smartest Way to build your mobile app
-    //       </Text>
-    //       <Text size={30} bold white style={styles.title}>
-    //         React Native Starter
-    //       </Text>
-    //     </View>
-    //     <View style={[styles.section, styles.sectionLarge]}>
-    //       <Text color="#19e7f7" hCenter size={15} style={styles.description}>
-    //         {' '}
-    //         A powerful starter project that bootstraps development of your
-    //         mobile application and saves you $20 000*
-    //       </Text>
-    //       <View style={styles.priceContainer}>
-    //         <View style={{ flexDirection: 'row' }}>
-    //           <Text white bold size={50} style={styles.price}>
-    //             {isExtended ? '$499' : '$99'}
-    //           </Text>
-    //         </View>
-    //         <TouchableOpacity
-    //           style={styles.priceLink}
-    //           onPress={() =>
-    //             isExtended ? setIsExtended(false) : setIsExtended(true)
-    //           }
-    //         >
-    //           <Text white size={14}>
-    //             {isExtended
-    //               ? 'Multiple Applications License'
-    //               : 'Single Application License'}
-    //           </Text>
-    //         </TouchableOpacity>
-    //       </View>
-    //     </View>
-    //   </ImageBackground>
-    // </View>
     <>
-      {/* <Button
-        mode="contained"
-        style={{ marginLeft: 290, marginRight: 40 }}
-        onPress={() => props.navigation.navigate('Expenses')}
-      >
-        +
-      </Button> */}
-
       <View
         style={{
           paddingVertical: 10,
@@ -537,7 +470,18 @@ export default function AddexpenseScreen(props) {
             </Menu>
             {/* {expensename? ( */}
 
-            {/* ):<Text></Text>} */}
+            {check && (
+              <Text
+                style={{
+                  fontFamily: fonts.primaryBold,
+                  fontSize: 20,
+                  textAlign: 'center',
+                  color: 'primary',
+                }}
+              >
+                {categoryname}
+              </Text>
+            )}
           </View>
           {/* <Text
             style={{
@@ -583,6 +527,7 @@ export default function AddexpenseScreen(props) {
                 return (
                   <TextInput
                     label={item.name}
+                    mode="outlined"
                     style={{ padding: 15 }}
                     onChangeText={e => handleComment(e, item, item.id)}
                   />
@@ -601,12 +546,10 @@ export default function AddexpenseScreen(props) {
                         paddingBottom: 15,
                       }}
                       onDateChange={e => handleComment(e, item, item.id)}
-                      date={item?.text}
+                      date={item.text}
                       mode="date"
                       placeholder="select date"
                       format="YYYY-MM-DD"
-                      minDate="2016-05-01"
-                      maxDate="2016-06-01"
                       confirmBtnText="Confirm"
                       cancelBtnText="Cancel"
                       customStyles={{

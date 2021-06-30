@@ -5,7 +5,7 @@ import TabNavigator from './MainTabNavigator';
 import GalleryScreen from '../gallery/GalleryViewContainer';
 import AvailableInFullVersion from '../../modules/availableInFullVersion/AvailableInFullVersionViewContainer';
 import SingleExpense from '../Expense/SingleExpense';
-import AddexpenseScreen from '../Expense/AddExpense';
+import AddexpenseScreen from '../Expense/demoadd';
 import ExpenseScreen from '../Expense/ExpenseContainer';
 
 
