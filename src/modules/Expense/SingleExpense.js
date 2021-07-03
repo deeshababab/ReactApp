@@ -144,7 +144,7 @@ export default function SingleExpense({ route, navigation }) {
 
             {expensedata.map((content, index) => {
               return (
-                <View style={{ paddingLeft: 15, paddingTop: 15 }}>
+                <View style={{ paddingLeft: 15, paddingTop: 10 }}>
                   <Text style={[styles1.itemThreeTitle, { fontSize: 15 }]}>
                     {content.column.name}
                   </Text>
@@ -172,7 +172,7 @@ export default function SingleExpense({ route, navigation }) {
                     <Text
                       style={[
                         styles1.itemThreeSubtitle,
-                        { paddingLeft: 15, paddingBottom: 15 },
+                        { paddingLeft: 15, paddingBottom: 10 },
                       ]}
                     >
                       {content.type === 'date'
@@ -214,7 +214,7 @@ export default function SingleExpense({ route, navigation }) {
                       color: '#000',
                     }}
                   >
-                    Amount: {expenseList.amount}
+                    Amount: {expenseList.amount} SAR
                   </Text>
                 </View>
               </View>

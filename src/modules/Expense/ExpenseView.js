@@ -38,7 +38,7 @@ export default class ExpenseScreen extends React.Component {
       listverify: [],
     };
   }
-  
+
   componentWillMount() {
     fetch(url + 'expense')
       .then(result => result.json())
@@ -48,7 +48,6 @@ export default class ExpenseScreen extends React.Component {
         this.state.list.sort(
           (a, b) => new Date(b.created_at) - new Date(a.created_at),
         );
-        console.log(this.state.list);
         this.setState({ list: data });
       });
   }
@@ -62,7 +61,6 @@ export default class ExpenseScreen extends React.Component {
         this.state.list.sort(
           (a, b) => new Date(b.created_at) - new Date(a.created_at),
         );
-        console.log(this.state.list);
         this.setState({ list: data });
       });
     fetch(url + 'expense-paid')
@@ -72,7 +70,7 @@ export default class ExpenseScreen extends React.Component {
         this.state.listverify.sort(
           (a, b) => new Date(b.created_at) - new Date(a.created_at),
         );
-        console.log(this.state.listverify);
+        
         this.setState({ listverify: data });
       });
     this.updateState = this.updateState.bind(this);
@@ -154,7 +152,7 @@ export default class ExpenseScreen extends React.Component {
               <View style={styles.itemThreeSubContainer}>
                 <View style={styles.itemThreeContent}>
                   <Text style={styles.itemThreeBrand}>
-                    {v.payment_account?.name}
+                    {v.payment_account[0]?.name}
                   </Text>
                   <Text style={styles.itemThreeTitle}>
                     Bill No: {v.referrence_bill_no}
@@ -184,7 +182,7 @@ export default class ExpenseScreen extends React.Component {
                         </Text>
                       </View>
                     )}
-                    <Text style={styles.itemThreePrice}>{v.amount}</Text>
+                    <Text style={styles.itemThreePrice}>{v.amount} SAR</Text>
                   </View>
                 </View>
               </View>
@@ -211,7 +209,7 @@ export default class ExpenseScreen extends React.Component {
               <View style={styles.itemThreeSubContainer}>
                 <View style={styles.itemThreeContent}>
                   <Text style={styles.itemThreeBrand}>
-                    {v.payment_account[0].name}
+                    {v.payment_account[0]?.name}
                   </Text>
                   <View>
                     <Text style={styles.itemThreeTitle}>
@@ -226,21 +224,32 @@ export default class ExpenseScreen extends React.Component {
                       <View
                         style={[
                           styles.badge,
-                          item.badge === 'NEW' && {
+                          
+                          v.is_paid === "0" ? {
                             backgroundColor: colors.secondary,
-                          },
+                          }:{ backgroundColor: colors.primary}
                         ]}
                       >
-                        <Text
-                          style={{ fontSize: 10, color: colors.white }}
-                          styleName="bright"
-                          onPress={() => this._openArticle(v.id, v.id)}
-                        >
-                          Pending
-                        </Text>
+                        {v.is_paid === "0" ? (
+                          <Text
+                            style={{ fontSize: 10, color: colors.white }}
+                            styleName="bright"
+                            onPress={() => this._openArticle(v.id, v.id)}
+                          >
+                            Pending
+                          </Text>
+                        ) : (
+                          <Text
+                            style={{ fontSize: 10, color: colors.white }}
+                            styleName="bright"
+                            onPress={() => this._openArticle(v.id, v.id)}
+                          >
+                            Payment done
+                          </Text>
+                        )}
                       </View>
                     )}
-                    <Text style={styles.itemThreePrice}>{v.amount}</Text>
+                    <Text style={styles.itemThreePrice}>{v.amount} SAR</Text>
                   </View>
                 </View>
               </View>

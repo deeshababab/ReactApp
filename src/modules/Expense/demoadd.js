@@ -27,7 +27,7 @@ import fetch from 'node-fetch';
 import DocumentPicker from 'react-native-document-picker';
 import axios from 'axios';
 import { Icon, Avatar } from 'react-native-elements';
-import url,{phpurl} from '../../../Axios';
+import url, { phpurl } from '../../../Axios';
 
 import { colors, fonts } from '../../styles';
 import { Text } from '../../components/StyledText';
@@ -36,16 +36,7 @@ const iconview = require('../../../assets/images/drawer/view.jpg');
 const arrowIcon = require('../../../assets/images/pages/arrow.png');
 
 export default function AddexpenseScreen(props) {
-  // const rnsUrl = 'https://reactnativestarter.com';
-  // const handleClick = () => {
-  //   Linking.canOpenURL(rnsUrl).then(supported => {
-  //     if (supported) {
-  //       Linking.openURL(rnsUrl);
-  //     } else {
-  //       console.log(`Don't know how to open URI: ${rnsUrl}`);
-  //     }
-  //   });
-  // };
+ 
   const nestedObject = [
     {
       itemId: 1,
@@ -104,7 +95,7 @@ export default function AddexpenseScreen(props) {
   const isVisible = useIsFocused();
   React.useEffect(() => {
     let isMounted = true;
-    fetch(url+'account-categories')
+    fetch(url + 'account-categories')
       .then(result => result.json())
       .then(data => {
         if (isMounted) setList(data);
@@ -112,7 +103,7 @@ export default function AddexpenseScreen(props) {
       .catch(error => {
         console.log(error);
       });
-    fetch(url+'payment-account')
+    fetch(url + 'payment-account')
       .then(result => result.json())
       .then(data => {
         if (isMounted) setpaymentaccount(data);
@@ -141,7 +132,7 @@ export default function AddexpenseScreen(props) {
 
   const closeMenu = n => {
     setVisible(false);
-    console.log(n);
+    
   };
   const openMenu1 = () => {
     setVisible1(true);
@@ -205,7 +196,7 @@ export default function AddexpenseScreen(props) {
   };
 
   const FieldSet = (v, n, name) => {
-    fetch(url+`columns/${v}`)
+    fetch(url + `columns/${v}`)
       .then(result => result.json())
       .then(data => {
         if (data[0].column.length) {
@@ -264,9 +255,49 @@ export default function AddexpenseScreen(props) {
         // DocumentPicker.types.pdf
       });
       // Printing the log realted to the file
-      console.log('res : ' + JSON.stringify(res));
+
       // Setting the state to show single file attributes
       setSingleFile(res);
+    } catch (err) {
+      setSingleFile(null);
+      // Handling any exception (If any)
+      if (DocumentPicker.isCancel(err)) {
+        // If user canceled the document selection
+        alert('Canceled');
+      } else {
+        // For Unknown Error
+        alert('Unknown Error: ' + JSON.stringify(err));
+        throw err;
+      }
+    }
+  };
+  const selectMultipleFile = async (id) => {
+    try {
+      const res = await DocumentPicker.pick({
+        type: [DocumentPicker.types.images],
+        // There can me more options as well
+        // DocumentPicker.types.allFiles
+        // DocumentPicker.types.images
+        // DocumentPicker.types.plainText
+        // DocumentPicker.types.audio
+        // DocumentPicker.types.pdf
+      });
+      // Printing the log realted to the file
+      
+      // Setting the state to show single file attributes
+      const result = List3; // copy state
+      result.map(el => {
+        // map array to replace the old comment with the new one
+      
+        
+          el.text = res;
+          el.column_id = id;
+        
+        return el;
+      }); // copy state
+ 
+    // setfield(result);
+    setisAlive(false);
     } catch (err) {
       setSingleFile(null);
       // Handling any exception (If any)
@@ -309,17 +340,14 @@ export default function AddexpenseScreen(props) {
     const result = List3; // copy state
     result.map(el => {
       // map array to replace the old comment with the new one
-      console.log(el.name)
-      console.log(item.name)
+    
       if (el.name === item.name) {
-        console.log('deeee')
         el.text = e;
         el.column_id = i;
       }
       return el;
     });
     // setfield(result);
-    console.log(result)
     setisAlive(false);
     // set state with new comment
   };
@@ -343,6 +371,13 @@ export default function AddexpenseScreen(props) {
       uri: singleFile.uri,
       type: singleFile.type,
     });
+    List3.map((answer, i) => {  
+      // formData.append(`quotation_detail${i}`,JSON.stringify(answer))
+      formData.append(`file${answer.column_id}`,answer.text)
+     console.log(answer.column_id);
+     console.log(answer.text);
+      // answer.files&& (formData.append(`file${i}`,answer.files))
+    })
     formData.append('bank_slip', JSON.stringify(res));
     formData.append('paid_date', date);
     formData.append('referrence_bill_no', refbill);
@@ -361,12 +396,9 @@ export default function AddexpenseScreen(props) {
       formData.append('tax', parseFloat(taxamount).toFixed(2));
       formData.append('company_name', checkedbox);
     }
-    console.log(formData);
+    console.log(formData)
     axios
-      .post(
-        `${phpurl}/expense.php`,
-        formData,
-      )
+      .post(`${phpurl}/expense.php`, formData)
       .then(response => {
         console.log('hd' + response.data);
         alert('Data Saved successfully');
@@ -374,7 +406,6 @@ export default function AddexpenseScreen(props) {
         props.navigation.navigate('Expenses');
       })
       .catch(error => console.log('hsdfff' + error));
- 
   };
 
   return (
@@ -435,10 +466,10 @@ export default function AddexpenseScreen(props) {
               <Text
                 style={{
                   fontFamily: fonts.primaryBold,
-                  fontSize: 20,
+                  fontSize: 15,
                   paddingLeft: 1,
                   textAlign: 'center',
-                  paddingBottom: 15,
+                  paddingTop: 10,
                   color: 'primary',
                 }}
               >
@@ -474,9 +505,10 @@ export default function AddexpenseScreen(props) {
               <Text
                 style={{
                   fontFamily: fonts.primaryBold,
-                  fontSize: 20,
+                  fontSize: 13,
                   textAlign: 'center',
                   color: 'primary',
+                  paddingTop: 10,
                 }}
               >
                 {categoryname}
@@ -523,6 +555,19 @@ export default function AddexpenseScreen(props) {
           )}
           {!check &&
             List3.map((item, i) => {
+              if (item.type === 'file') {
+                return (
+                  <TouchableOpacity
+                    style={styles.buttonStyle}
+                    activeOpacity={0.5}
+                    onPress={()=>selectMultipleFile(item.id)}
+                  >
+                    <Text style={styles.buttonTextStyle}>
+                      {item.name}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              }
               if (item.type === 'text') {
                 return (
                   <TextInput
